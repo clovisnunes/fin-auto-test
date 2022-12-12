@@ -4,7 +4,7 @@ import { faker } from '@faker-js/faker/locale/pt_BR';
 import cli_loc from '../support/cliente-locators';
 import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
 
-describe('Deve testar o cadastro de contatos', () => {
+describe('Deve testar o cadastro de fornecedores', () => {
 
     // TODO se possivel efetuar login via API
 
@@ -58,14 +58,14 @@ describe('Deve testar o cadastro de contatos', () => {
         cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg3MDYyNywiZXhwIjoxNjcwODg4NjI3fQ.FoLRMbGn51WHJIwh1waq947rhhoBvSAEHY8LxQVcYtQ')
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
-        cy.xpath(cli_loc.MENU_LATERAL.CLIENTES).click()
+        cy.xpath(cli_loc.MENU_LATERAL.FORNECEDORES).click()
     })
 
 
-    it('Cadastro de cliente', function() {
+    it('Cadastro de fornecedor', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
-        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_CLIENTE).click()
+        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_FORNECEDORES).click()
 
         // validando tipo de pessoa e preenchendo os dados de acordo
         if(cliente.tipo_pessoa == 'fisica') {
@@ -140,11 +140,11 @@ describe('Deve testar o cadastro de contatos', () => {
 
         // concluir e validar mensagem de sucesso
         cy.get(cli_loc.CLIENTES.BTN_CONCLUIR_CADASTRO).click()
-        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Cliente criado com sucesso!')
+        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Fornecedor criado com sucesso!')
 
     })
 
-    it('Validação do cadastro de cliente', function() {
+    it('Validação do cadastro de fornecedores', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
         let filtro_nome
         if(cliente.tipo_pessoa == 'fisica') {
