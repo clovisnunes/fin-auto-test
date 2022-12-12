@@ -18,6 +18,9 @@ const contatos_locators = {
     CLIENTES: {
         BTN_CADASTRAR_CLIENTE: 'h2:contains("Clientes") a',
         BTN_CADASTRAR_FORNECEDORES: 'h2:contains("Fornecedores") a',
+        BTN_CADASTRAR_FUNCIONARIO: 'h2:contains("Funcionários") a',
+        BTN_CADASTRAR_PRESTADOR: 'h2:contains("Prestadores de Serviço") a',
+        BTN_CADASTRAR_SOCIO: 'h2:contains("Sócios") a',
         BTN_INATIVAR_CLIENTE: 'nz-form-label:contains("Ativo") ~ nz-switch button',
         BTN_CONCLUIR_CADASTRO: 'button:contains("Salvar")',
         MSG_CLIENTE_CRIADO: '.ant-message-notice-content',
