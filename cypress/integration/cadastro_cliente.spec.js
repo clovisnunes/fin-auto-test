@@ -41,7 +41,7 @@ describe('Deve testar o cadastro de contatos', () => {
         //contato
         email: faker.internet.email(),
         numero_telefone: faker.phone.number('(##) 9####-####'),
-        observacoes: faker.hacker.phrase(),
+        observacoes: faker.random.words(),
         
         //contas bancarias
         descricao: faker.random.words(),
@@ -55,7 +55,7 @@ describe('Deve testar o cadastro de contatos', () => {
     }
 
     beforeEach(() => {
-        cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg1MjQ3MywiZXhwIjoxNjcwODcwNDczfQ.cZp0PZFH9y_JyznWIdetsOf_0kBakWpqOqCo5AtsudE')
+        cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg3MDYyNywiZXhwIjoxNjcwODg4NjI3fQ.FoLRMbGn51WHJIwh1waq947rhhoBvSAEHY8LxQVcYtQ')
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
         cy.xpath(cli_loc.MENU_LATERAL.CLIENTES).click()
@@ -174,7 +174,7 @@ describe('Deve testar o cadastro de contatos', () => {
         cy.get(cli_loc.CONTATOS_ENDERECO.SLT_TIPO_ENDERECO).should('have.text', cliente.tipo_endereco)
         cy.get(cli_loc.CONTATOS_ENDERECO.CEP).should('have.value', cliente.cep)
         cy.get(cli_loc.CONTATOS_ENDERECO.LOGRADOURO).should('have.value', cliente.logradouro)
-        cy.get(cli_loc.CONTATOS_ENDERECO.NUMERO).should('have.value', cliente.numero_endereco)
+        cy.xpath(cli_loc.CONTATOS_ENDERECO.NUMERO).should('have.value', cliente.numero_endereco)
         cy.get(cli_loc.CONTATOS_ENDERECO.COMPLEMENTO).should('have.value', cliente.complemento)
         cy.get(cli_loc.CONTATOS_ENDERECO.BAIRRO).should('have.value', cliente.bairro)
         cy.get(cli_loc.CONTATOS_ENDERECO.ESTADO).should('have.text', cliente.estado)

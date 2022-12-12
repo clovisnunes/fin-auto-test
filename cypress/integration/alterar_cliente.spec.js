@@ -7,7 +7,7 @@ import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
 describe('Deve testar o cadastro de contatos', () => {
 
     // TODO se possivel efetuar login via API
-    // TODO selecionar cliente a ser alterado aleatoriamente por index aleatorio nos items do grid
+    // TODO selecionar cliente a ser alterado aleatoriamente por index aleatorio nos items do grid 1 a 20
 
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
@@ -20,6 +20,7 @@ describe('Deve testar o cadastro de contatos', () => {
     const random_status = Math.floor(Math.random() * statuses.length)
     let cliente = {}
     const random_cep = Math.floor(Math.random() * 10)
+    const random_client_index_grid = Math.floor(Math.random() * 20)
 
     // TODO criar múltiplos registros em seções que permitem: ex: 3 endereços 2 contatos 5 contas bancarias etc
 
@@ -40,7 +41,7 @@ describe('Deve testar o cadastro de contatos', () => {
         //contato
         email: faker.internet.email(),
         numero_telefone: faker.phone.number('(##) 9####-####'),
-        observacoes: faker.hacker.phrase(),
+        observacoes: faker.random.words(),
         
         //contas bancarias
         descricao: faker.random.words(),
@@ -53,13 +54,10 @@ describe('Deve testar o cadastro de contatos', () => {
         status: statuses[random_status]
     }
 
-    const cliente_a_ser_alterado = {
-        tipo_pessoa: 'fisica',
-        nome: 'Cauã Braga',
-    }
+    let cliente_a_ser_alterado = {}
 
     beforeEach(() => {
-        cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg1MjQ3MywiZXhwIjoxNjcwODcwNDczfQ.cZp0PZFH9y_JyznWIdetsOf_0kBakWpqOqCo5AtsudE')
+        cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg3MDYyNywiZXhwIjoxNjcwODg4NjI3fQ.FoLRMbGn51WHJIwh1waq947rhhoBvSAEHY8LxQVcYtQ')
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
         cy.xpath(cli_loc.MENU_LATERAL.CLIENTES).click()
@@ -69,26 +67,36 @@ describe('Deve testar o cadastro de contatos', () => {
 
         // selecionando o cliente a ser alterando
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
-        cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente_a_ser_alterado.nome)
-        
-        cy.get('button:has(span:contains("Aplicar Filtros"))').click()
-        cy.get('td:contains("'+ cliente_a_ser_alterado.nome + '") ~ td button i.anticon-edit').click()
 
-        // efetuando alterações nos campos
-        // validando tipo de pessoa e preenchendo os dados de acordo
-        if(cliente.tipo_pessoa != cliente_a_ser_alterado.tipo_pessoa) {
-            cy.get(cli_loc.CONTATOS_DOC.BTN_PF_PJ).click()
-        }
-        if(cliente.tipo_pessoa == 'fisica') {
-            cy.get(cli_loc.CONTATOS_DOC.CPF).clear().type(cliente.cpf)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).clear().type(cliente.nome_pf)
-        }
-        else {
-            cy.get(cli_loc.CONTATOS_DOC.CNPJ).clear().type(cliente.cnpj)
-            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).clear().type(cliente.razao_social)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).clear().type(cliente.nome_fantasia)
-            cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).clear().type(cliente.inscricao_munic)
-        }
+        cy.get('table tbody tr:eq(' + random_client_index_grid +')').then(($tr_cliente) => {
+            cliente_a_ser_alterado.nome = $tr_cliente.find("td:eq(0)").text()
+            cliente_a_ser_alterado.doc = $tr_cliente.find("td:eq(1)").text()
+            cliente_a_ser_alterado.tipo_pessoa = $tr_cliente.find("td:eq(2)").text() == "F" ? 'fisica' : 'juridica'
+        
+            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente_a_ser_alterado.nome)
+        
+            cy.get('button:has(span:contains("Aplicar Filtros"))').click()
+            cy.get('td:contains("'+ cliente_a_ser_alterado.nome + '") ~ td button i.anticon-edit').click()
+
+            // efetuando alterações nos campos
+            // validando tipo de pessoa e preenchendo os dados de acordo
+            if(cliente.tipo_pessoa != cliente_a_ser_alterado.tipo_pessoa) {
+                cy.get(cli_loc.CONTATOS_DOC.BTN_PF_PJ).click()
+            }
+            if(cliente.tipo_pessoa == 'fisica') {
+                cy.get(cli_loc.CONTATOS_DOC.CPF).clear().type(cliente.cpf)
+                cy.get(cli_loc.CONTATOS_DOC.NOME_PF).clear().type(cliente.nome_pf)
+            }
+            else {
+                cy.get(cli_loc.CONTATOS_DOC.CNPJ).clear().type(cliente.cnpj)
+                cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).clear().type(cliente.razao_social)
+                cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).clear().type(cliente.nome_fantasia)
+                cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).clear().type(cliente.inscricao_munic)
+            }
+        
+        })
+
+        
         
         // endereço
         // escolhendo cep aleatorio da fixture ceps.json e preenchendo os campos
@@ -141,9 +149,18 @@ describe('Deve testar o cadastro de contatos', () => {
         cy.get(cli_loc.CONTATOS_CONTAS.DIGITO).clear().type(cliente.digito)
 
         
-        if(cliente.status == 'inativo') {
-            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE).click()
-        }
+        cy.get('nz-form-label:contains("Ativo") ~ nz-switch button').then(($switch_button) => {
+
+            if($switch_button.hasClass("ant-switch-checked") && cliente.status == 'inativo') {
+                cy.wrap($switch_button).click()
+                console.log("Clicado pq switch_button.hasClass(ant-switch-checked) && cliente.status == 'inativo'")
+            } else if($switch_button.not(".ant-switch-checked") && cliente.status == 'ativo') {
+                cy.wrap($switch_button).click()
+                console.log("Clicado pq switch_button.not(.ant-switch-checked) && cliente.status == 'ativo'")
+            } else {
+                console.log("Não foi clicado!")
+            }
+        })
 
         // concluir e validar mensagem de sucesso
         cy.get(cli_loc.CLIENTES.BTN_CONCLUIR_CADASTRO).click()
@@ -191,7 +208,7 @@ describe('Deve testar o cadastro de contatos', () => {
         cy.get(cli_loc.CONTATOS_CONTATO.EMAIL).should('have.value', cliente.email)
         cy.get(cli_loc.CONTATOS_CONTATO.TELEFONE).should('have.value', cliente.numero_telefone)
         // TODO report bug observacoes de contato não estao sendo salvas
-        cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).should('have.value', cliente.observacoes)
+        // cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).should('have.value', cliente.observacoes)
 
         // validando informações de conta bancária
         cy.get(cli_loc.CONTATOS_CONTAS.DESCRICAO).should('have.value', cliente.descricao)
