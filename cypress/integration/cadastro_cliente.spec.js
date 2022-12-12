@@ -21,6 +21,8 @@ describe('Deve testar o cadastro de contatos', () => {
     const random_cep = Math.floor(Math.random() * 10)
 
     // TODO criar múltiplos registros em seções que permitem: ex: 3 endereços 2 contatos 5 contas bancarias etc
+    // ideia: numero aleatorio de 1 a 5 irá gerar a quantidade de registros que serão adicionados
+    // numero aleatorio de 0 até o máximo da quantidade de registros gerados será removido
 
     cliente = {
         tipo_pessoa: tipos_pessoa[random_t_pessoa],
@@ -156,7 +158,7 @@ describe('Deve testar o cadastro de contatos', () => {
         }
         cy.get('button:has(span:contains("Aplicar Filtros"))').click()
 
-        cy.get('td:contains("'+ filtro_nome + '") ~ td button i.anticon-eye:parent').click()
+        cy.get('td:contains("'+ filtro_nome + '") ~ td button i.anticon-eye').click()
 
         if(cliente.tipo_pessoa == 'juridica') {
             cy.get(cli_loc.CONTATOS_DOC.CNPJ).should('have.value', cliente.cnpj)

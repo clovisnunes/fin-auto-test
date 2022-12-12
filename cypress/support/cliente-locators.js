@@ -46,7 +46,7 @@ const contatos_locators = {
         BAIRRO: 'input[formcontrolname="neighborhood"]',
         ESTADO: 'nz-form-label:contains("Estado") ~ nz-form-control',
         CIDADE: 'nz-form-label:contains("Cidade") ~ nz-form-control',
-        NUMERO: 'input[formcontrolname="number"]',
+        NUMERO: '//div[text()="Informações de Endereço"]/../../../div//input[@formcontrolname="number"]',
         COMPLEMENTO: 'input[formcontrolname="complement"]'
     },
 
@@ -69,6 +69,7 @@ const contatos_locators = {
         },
         DESCRICAO: 'input[formcontrolname="description"]',
         SLT_BANCO: 'nz-form-label:contains("Banco") ~ nz-form-control',
+        EXCLUIR_BANCO: 'nz-form-label:contains("Banco") ~ nz-form-control svg[data-icon="close-circle"]',
         OPC_SLT_CAIXA:      'nz-option-container nz-option-item[title="Caixa"]',
         OPC_SLT_SANTANDER:  'nz-option-container nz-option-item[title="Santander"]',
         AGENCIA: 'input[formcontrolname="agencyNumber"]',
