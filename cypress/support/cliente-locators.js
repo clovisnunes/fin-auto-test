@@ -11,7 +11,7 @@ const contatos_locators = {
         CLIENTES: '//ul/li/a/span[text()="Clientes"]/..',
         FORNECEDORES: '//ul/li/a/span[text()="Fornecedores"]/..',
         FUNCIONARIOS: '//ul/li/a/span[text()="Funcionários"]/..',
-        PRESTADORES: '//ul/li/a/span[text()="Prestadores"]/..',
+        PRESTADORES: '//ul/li/a/span[text()="Prestadores de serviço"]/..',
         SOCIOS: '//ul/li/a/span[text()="Sócios"]/..',
     },
 
