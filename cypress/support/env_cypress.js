@@ -1,0 +1,5 @@
+const env_data = {
+    url: 'http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDk1NjY5MSwiZXhwIjoxNjcwOTc0NjkxfQ.pTtu_p_Br7VzVa4TDTxv9MGBUWSdbiiS4kO0q9dxwWs'
+}
+
+export default env_data;

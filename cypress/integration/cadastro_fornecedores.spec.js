@@ -3,6 +3,7 @@
 import { faker } from '@faker-js/faker/locale/pt_BR';
 import cli_loc from '../support/cliente-locators';
 import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
+import env_data from '../support/env_cypress';
 
 describe('Deve testar o cadastro de fornecedores', () => {
 
@@ -55,7 +56,7 @@ describe('Deve testar o cadastro de fornecedores', () => {
     }
 
     beforeEach(() => {
-        cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg3MDYyNywiZXhwIjoxNjcwODg4NjI3fQ.FoLRMbGn51WHJIwh1waq947rhhoBvSAEHY8LxQVcYtQ')
+        cy.visit(env_data.url)
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
         cy.xpath(cli_loc.MENU_LATERAL.FORNECEDORES).click()
@@ -146,6 +147,8 @@ describe('Deve testar o cadastro de fornecedores', () => {
 
     it('Validação do cadastro de fornecedores', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
+        
+        // busca do fornecedor para validação
         let filtro_nome
         if(cliente.tipo_pessoa == 'fisica') {
             cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
@@ -156,10 +159,10 @@ describe('Deve testar o cadastro de fornecedores', () => {
             cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
             filtro_nome = cliente.razao_social
         }
-        cy.get('button:has(span:contains("Aplicar Filtros"))').click()
+        cy.get(cli_loc.CLIENTES.BTN_APLICAR_FILTRO).click()
+        cy.get(cli_loc.CLIENTES.BTN_VISUALIZAR_CONTATO(filtro_nome)).click()
 
-        cy.get('td:contains("'+ filtro_nome + '") ~ td button i.anticon-eye').click()
-
+        // validando informações de documentação
         if(cliente.tipo_pessoa == 'juridica') {
             cy.get(cli_loc.CONTATOS_DOC.CNPJ).should('have.value', cliente.cnpj)
             cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).should('have.value', cliente.razao_social)

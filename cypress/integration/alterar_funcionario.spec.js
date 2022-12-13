@@ -3,8 +3,9 @@
 import { faker } from '@faker-js/faker/locale/pt_BR';
 import cli_loc from '../support/cliente-locators';
 import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
+import env_data from '../support/env_cypress';
 
-describe('Deve testar o cadastro de contatos', () => {
+describe('Deve testar a edição de contatos', () => {
 
     // TODO se possivel efetuar login via API
     // TODO selecionar cliente a ser alterado aleatoriamente por index aleatorio nos items do grid 1 a 20
@@ -54,15 +55,15 @@ describe('Deve testar o cadastro de contatos', () => {
     let cliente_a_ser_alterado = {}
 
     beforeEach(() => {
-        cy.visit('http://finances.pisomtech.com.br/authentication/login?continue=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywidXNlcm5hbWUiOiJjbG92aXMiLCJuYW1lIjoiQ2xvdmlzIiwiaXNBZG1pbmlzdHJhdG9yIjpmYWxzZSwiaXNSb290IjpmYWxzZSwiZW1haWwiOiJjbG92aXMubnVuZXNAcGlzb210ZWNoLmNvbS5iciIsImFwcHMiOlsiQVBQX0ZJTkFOQ0VTIl0sImlhdCI6MTY3MDg3MDYyNywiZXhwIjoxNjcwODg4NjI3fQ.FoLRMbGn51WHJIwh1waq947rhhoBvSAEHY8LxQVcYtQ')
+        cy.visit(env_data.url)
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
         cy.xpath(cli_loc.MENU_LATERAL.FUNCIONARIOS).click()
     })
 
-    it('Alteração de cliente', function() {
+    it('Alteração de funcionário', function() {
 
-        // selecionando o cliente a ser alterando
+        // selecionando o funcionario a ser alterado
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
         cy.get('table tbody tr:eq(' + random_client_index_grid +')').then(($tr_cliente) => {
@@ -72,7 +73,7 @@ describe('Deve testar o cadastro de contatos', () => {
         
             cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente_a_ser_alterado.nome)
         
-            cy.get('button:has(span:contains("Aplicar Filtros"))').click()
+            cy.get(cli_loc.CLIENTES.BTN_APLICAR_FILTRO).click()
             cy.get('td:contains("'+ cliente_a_ser_alterado.nome + '") ~ td button i.anticon-edit').click()
 
             // efetuando alterações nos campos
@@ -153,16 +154,16 @@ describe('Deve testar o cadastro de contatos', () => {
 
     })
 
-    it('Validação da alteração do cliente', function() {
+    it('Validação da alteração do funcionário', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
+        // busca do funcionario para validação
         cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
         cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente.nome_pf)
+        cy.get(cli_loc.CLIENTES.BTN_APLICAR_FILTRO).click()
+        cy.get(cli_loc.CLIENTES.BTN_VISUALIZAR_CONTATO(cliente.nome_pf)).click()
 
-        cy.get('button:has(span:contains("Aplicar Filtros"))').click()
-
-        cy.get('td:contains("'+ cliente.nome_pf + '") ~ td button i.anticon-eye').click()
-
+        // validando informações de documentação
         cy.get(cli_loc.CONTATOS_DOC.CPF).should('have.value', cliente.cpf)
         cy.get(cli_loc.CONTATOS_DOC.NOME_PF).should('have.value', cliente.nome_pf)
 
