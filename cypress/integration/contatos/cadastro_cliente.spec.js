@@ -1,9 +1,9 @@
 /// <reference types="cypress" />
 
 import { faker } from '@faker-js/faker/locale/pt_BR';
-import cli_loc from '../support/cliente-locators';
-import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
-import env_data from '../support/env_cypress';
+import cli_loc from '../../support/cliente-locators';
+import {cpf, cnpj} from '../../support/gerador_CPF_CNPJ'
+import env_data from '../../support/env_cypress';
 
 describe('Deve testar o cadastro de contatos', () => {
     // dados aleatórios
@@ -11,14 +11,17 @@ describe('Deve testar o cadastro de contatos', () => {
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
     const bancos = ['Caixa', 'Santander']
     const random_banco = Math.floor(Math.random() * bancos.length)
+    const tipos_pessoa = ['fisica', 'juridica']
+    const random_t_pessoa = Math.floor(Math.random() * tipos_pessoa.length)
     const statuses = ['ativo', 'inativo']
     const random_status = Math.floor(Math.random() * statuses.length)
     let cliente = {}
     const random_cep = Math.floor(Math.random() * 10)
 
     cliente = {
-        tipo_pessoa: 'juridica',
+        tipo_pessoa: tipos_pessoa[random_t_pessoa],
         cnpj : cnpj(true),
+        cpf: cpf(true),
         nome_pf: faker.name.fullName(),
         razao_social: faker.company.name(),
         nome_fantasia: faker.company.companySuffix(),
@@ -49,19 +52,27 @@ describe('Deve testar o cadastro de contatos', () => {
         cy.visit(env_data.url)
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
-        cy.xpath(cli_loc.MENU_LATERAL.PRESTADORES).click()
+        cy.xpath(cli_loc.MENU_LATERAL.CLIENTES).click()
     })
 
-    it('Cadastro de prestadores', function() {
+
+    it('Cadastro de cliente', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
-        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_PRESTADOR).click()
+        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_CLIENTE).click()
 
         // validando tipo de pessoa e preenchendo os dados de acordo
-        cy.get(cli_loc.CONTATOS_DOC.CNPJ).type(cliente.cnpj)
-        cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
-        cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).type(cliente.nome_fantasia)
-        cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).type(cliente.inscricao_munic)
+        if(cliente.tipo_pessoa == 'fisica') {
+            cy.get(cli_loc.CONTATOS_DOC.BTN_PF_PJ).click()
+            cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
+            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente.nome_pf)
+        }
+        else {
+            cy.get(cli_loc.CONTATOS_DOC.CNPJ).type(cliente.cnpj)
+            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
+            cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).type(cliente.nome_fantasia)
+            cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).type(cliente.inscricao_munic)
+        }
         
         // endereço
         cy.xpath(cli_loc.CONTATOS_ENDERECO.BTN_ADC_ENDERECO).click()
@@ -123,24 +134,37 @@ describe('Deve testar o cadastro de contatos', () => {
 
         // concluir e validar mensagem de sucesso
         cy.get(cli_loc.CLIENTES.BTN_CONCLUIR_CADASTRO).click()
-        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Prestador de serviço criado com sucesso!')
+        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Cliente criado com sucesso!')
 
     })
 
-    it('Validação do cadastro de prestador', function() {
+    it('Validação do cadastro de cliente', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
-        // busca do prestador para validação
-        cy.get(cli_loc.CONTATOS_DOC.CNPJ).type(cliente.cnpj)
-        cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
+        // busca do cliente para validação
+        let filtro_nome
+        if(cliente.tipo_pessoa == 'fisica') {
+            cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
+            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente.nome_pf)
+            filtro_nome = cliente.nome_pf
+        } else {
+            cy.get(cli_loc.CONTATOS_DOC.CNPJ).type(cliente.cnpj)
+            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
+            filtro_nome = cliente.razao_social
+        }
         cy.get(cli_loc.CLIENTES.BTN_APLICAR_FILTRO).click()
-        cy.get(cli_loc.CLIENTES.BTN_VISUALIZAR_CONTATO(cliente.razao_social)).click()
+        cy.get(cli_loc.CLIENTES.BTN_VISUALIZAR_CONTATO(filtro_nome)).click()
 
         // validando informações de documentação
-        cy.get(cli_loc.CONTATOS_DOC.CNPJ).should('have.value', cliente.cnpj)
-        cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).should('have.value', cliente.razao_social)
-        cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).should('have.value', cliente.nome_fantasia)
-        cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).should('have.value', cliente.inscricao_munic)
+        if(cliente.tipo_pessoa == 'juridica') {
+            cy.get(cli_loc.CONTATOS_DOC.CNPJ).should('have.value', cliente.cnpj)
+            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).should('have.value', cliente.razao_social)
+            cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).should('have.value', cliente.nome_fantasia)
+            cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).should('have.value', cliente.inscricao_munic)
+        } else {
+            cy.get(cli_loc.CONTATOS_DOC.CPF).should('have.value', cliente.cpf)
+            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).should('have.value', cliente.nome_pf)  
+        }
 
         // validando informações de endereço
         cy.get(cli_loc.CONTATOS_ENDERECO.SLT_TIPO_ENDERECO).should('have.text', cliente.tipo_endereco)

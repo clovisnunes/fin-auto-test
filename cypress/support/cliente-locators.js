@@ -8,11 +8,20 @@ const contatos_locators = {
 
     MENU_LATERAL: {
         CONTATOS: '//ul/li/a/span[text()="Contatos"]/..',
+        FINANCEIRO: '//ul/li/a/span[text()="Financeiro"]/..',
+
         CLIENTES: '//ul/li/a/span[text()="Clientes"]/..',
         FORNECEDORES: '//ul/li/a/span[text()="Fornecedores"]/..',
         FUNCIONARIOS: '//ul/li/a/span[text()="Funcionários"]/..',
         PRESTADORES: '//ul/li/a/span[text()="Prestadores de serviço"]/..',
         SOCIOS: '//ul/li/a/span[text()="Sócios"]/..',
+
+        CENTROS_CUSTO: '//ul/li/a/span[text()="Centros de Custo"]/..',
+        PLANOS_CONTA: '',
+        CONTAS_PAGAR: '',
+        CONTAS_RECEBER: '',
+        CONTAS: '',
+        RELATORIO: '',
     },
 
     CLIENTES: {
@@ -33,6 +42,15 @@ const contatos_locators = {
         BTN_EDITAR_CONTATO(nome_filtro) {
             return 'td:contains("' + nome_filtro + '") ~ td button:eq(1)'
         },
+    },
+
+    FINANCEIRO: {
+        BTN_CADASTRAR_CCUSTO: 'h2:contains("Centros de Custos") a',
+        BTN_CADASTRAR_P_CONTA: 'h2:contains("Planos de Conta") a',
+        BTN_CADASTRAR_C_PAGAR: 'h2:contains("Contas a pagar") a',
+        BTN_CADASTRAR_C_RECEBER: 'h2:contains("Contas a receber") a',
+        BTN_CADASTRAR_CONTAS: 'h2:contains("Contas") a',
+
     },
 
     CONTATOS_DOC: {

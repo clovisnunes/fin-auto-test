@@ -1,9 +1,9 @@
 /// <reference types="cypress" />
 
 import { faker } from '@faker-js/faker/locale/pt_BR';
-import cli_loc from '../support/cliente-locators';
-import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
-import env_data from '../support/env_cypress';
+import cli_loc from '../../support/cliente-locators';
+import {cpf, cnpj} from '../../support/gerador_CPF_CNPJ'
+import env_data from '../../support/env_cypress';
 
 describe('Deve testar a edição de prestadores de serviço', () => {
    

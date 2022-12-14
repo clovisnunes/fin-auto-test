@@ -1,11 +1,11 @@
 /// <reference types="cypress" />
 
 import { faker } from '@faker-js/faker/locale/pt_BR';
-import cli_loc from '../support/cliente-locators';
-import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
-import env_data from '../support/env_cypress';
+import cli_loc from '../../support/cliente-locators';
+import {cpf, cnpj} from '../../support/gerador_CPF_CNPJ'
+import env_data from '../../support/env_cypress';
 
-describe('Deve testar o cadastro de fornecedores', () => {
+describe('Deve testar o cadastro de contatos', () => {
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
@@ -17,7 +17,7 @@ describe('Deve testar o cadastro de fornecedores', () => {
     const random_status = Math.floor(Math.random() * statuses.length)
     let cliente = {}
     const random_cep = Math.floor(Math.random() * 10)
-
+    
     cliente = {
         tipo_pessoa: tipos_pessoa[random_t_pessoa],
         cnpj : cnpj(true),
@@ -52,14 +52,14 @@ describe('Deve testar o cadastro de fornecedores', () => {
         cy.visit(env_data.url)
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
-        cy.xpath(cli_loc.MENU_LATERAL.FORNECEDORES).click()
+        cy.xpath(cli_loc.MENU_LATERAL.SOCIOS).click()
     })
 
 
-    it('Cadastro de fornecedor', function() {
+    it('Cadastro de sócio', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
-        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_FORNECEDORES).click()
+        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_SOCIO).click()
 
         // validando tipo de pessoa e preenchendo os dados de acordo
         if(cliente.tipo_pessoa == 'fisica') {
@@ -134,14 +134,14 @@ describe('Deve testar o cadastro de fornecedores', () => {
 
         // concluir e validar mensagem de sucesso
         cy.get(cli_loc.CLIENTES.BTN_CONCLUIR_CADASTRO).click()
-        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Fornecedor criado com sucesso!')
+        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Sócio criado com sucesso!')
 
     })
 
-    it('Validação do cadastro de fornecedores', function() {
+    it('Validação do cadastro de sócio', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
-        
-        // busca do fornecedor para validação
+
+        // busca do sócio para validação
         let filtro_nome
         if(cliente.tipo_pessoa == 'fisica') {
             cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)

@@ -1,26 +1,24 @@
 /// <reference types="cypress" />
 
 import { faker } from '@faker-js/faker/locale/pt_BR';
-import cli_loc from '../support/cliente-locators';
-import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
-import env_data from '../support/env_cypress';
+import cli_loc from '../../support/cliente-locators';
+import {cpf, cnpj} from '../../support/gerador_CPF_CNPJ'
+import env_data from '../../support/env_cypress';
 
-describe('Deve testar o cadastro de contatos', () => {
+describe('Deve testar a edição de contatos', () => {
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
     const bancos = ['Caixa', 'Santander']
     const random_banco = Math.floor(Math.random() * bancos.length)
-    const tipos_pessoa = ['fisica', 'juridica']
-    const random_t_pessoa = Math.floor(Math.random() * tipos_pessoa.length)
     const statuses = ['ativo', 'inativo']
     const random_status = Math.floor(Math.random() * statuses.length)
     let cliente = {}
     const random_cep = Math.floor(Math.random() * 10)
-    
+    const random_client_index_grid = Math.floor(Math.random() * 10)
+
     cliente = {
-        tipo_pessoa: tipos_pessoa[random_t_pessoa],
-        cnpj : cnpj(true),
+        tipo_pessoa: 'fisica',
         cpf: cpf(true),
         nome_pf: faker.name.fullName(),
         razao_social: faker.company.name(),
@@ -48,35 +46,39 @@ describe('Deve testar o cadastro de contatos', () => {
         status: statuses[random_status]
     }
 
+    let cliente_a_ser_alterado = {}
+
     beforeEach(() => {
         cy.visit(env_data.url)
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
-        cy.xpath(cli_loc.MENU_LATERAL.SOCIOS).click()
+        cy.xpath(cli_loc.MENU_LATERAL.FUNCIONARIOS).click()
     })
 
+    it('Alteração de funcionário', function() {
 
-    it('Cadastro de sócio', function() {
+        // selecionando o funcionario a ser alterado
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
-        cy.get(cli_loc.CLIENTES.BTN_CADASTRAR_SOCIO).click()
+        cy.get('table tbody tr:eq(' + random_client_index_grid +')').then(($tr_cliente) => {
+            cliente_a_ser_alterado.nome = $tr_cliente.find("td:eq(0)").text()
+            cliente_a_ser_alterado.doc = $tr_cliente.find("td:eq(1)").text()
+            cliente_a_ser_alterado.tipo_pessoa = $tr_cliente.find("td:eq(2)").text() == "F" ? 'fisica' : 'juridica'
+        
+            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente_a_ser_alterado.nome)
+        
+            cy.get(cli_loc.CLIENTES.BTN_APLICAR_FILTRO).click()
+            cy.get('td:contains("'+ cliente_a_ser_alterado.nome + '") ~ td button i.anticon-edit').click()
 
-        // validando tipo de pessoa e preenchendo os dados de acordo
-        if(cliente.tipo_pessoa == 'fisica') {
-            cy.get(cli_loc.CONTATOS_DOC.BTN_PF_PJ).click()
-            cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente.nome_pf)
-        }
-        else {
-            cy.get(cli_loc.CONTATOS_DOC.CNPJ).type(cliente.cnpj)
-            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).type(cliente.nome_fantasia)
-            cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).type(cliente.inscricao_munic)
-        }
+            // efetuando alterações nos campos
+            cy.get(cli_loc.CONTATOS_DOC.CPF).clear().type(cliente.cpf)
+            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).clear().type(cliente.nome_pf)
+        
+        })
+
+        
         
         // endereço
-        cy.xpath(cli_loc.CONTATOS_ENDERECO.BTN_ADC_ENDERECO).click()
-        
         // escolhendo cep aleatorio da fixture ceps.json e preenchendo os campos
         cy.fixture('ceps').as('ceps').then(() => {
             cliente.cep = this.ceps[random_cep].cep
@@ -85,7 +87,7 @@ describe('Deve testar o cadastro de contatos', () => {
             cliente.cidade = this.ceps[random_cep].cidade
             cliente.estado = this.ceps[random_cep].estado
 
-            cy.get(cli_loc.CONTATOS_ENDERECO.CEP).type(cliente.cep)
+            cy.get(cli_loc.CONTATOS_ENDERECO.CEP).clear().type(cliente.cep)
 
             // validação do endereço preenchido pelo cep
             cy.get(cli_loc.CONTATOS_ENDERECO.LOGRADOURO).should( 'have.value', cliente.logradouro)
@@ -95,8 +97,8 @@ describe('Deve testar o cadastro de contatos', () => {
         })
         
         // inserindo numero e complemento do endereco
-        cy.xpath(cli_loc.CONTATOS_ENDERECO.NUMERO).type(cliente.numero_endereco)
-        cy.get(cli_loc.CONTATOS_ENDERECO.COMPLEMENTO).type(cliente.complemento)
+        cy.xpath(cli_loc.CONTATOS_ENDERECO.NUMERO).clear().type(cliente.numero_endereco)
+        cy.get(cli_loc.CONTATOS_ENDERECO.COMPLEMENTO).clear().type(cliente.complemento)
 
         // selecionando tipo de endereço: comercial ou residencial
         cy.get(cli_loc.CONTATOS_ENDERECO.SLT_TIPO_ENDERECO).click()
@@ -107,15 +109,14 @@ describe('Deve testar o cadastro de contatos', () => {
         }
 
         // contato
-        cy.xpath(cli_loc.CONTATOS_CONTATO.BTN_ADC_CONTATO).click()
-        cy.get(cli_loc.CONTATOS_CONTATO.EMAIL).type(cliente.email)
-        cy.get(cli_loc.CONTATOS_CONTATO.TELEFONE).type(cliente.numero_telefone)
-        cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).type(cliente.observacoes)
+        cy.get(cli_loc.CONTATOS_CONTATO.EMAIL).clear().type(cliente.email)
+        cy.get(cli_loc.CONTATOS_CONTATO.TELEFONE).clear().type(cliente.numero_telefone)
+        cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).clear().type(cliente.observacoes)
 
         // contas bancarias
-        cy.xpath(cli_loc.CONTATOS_CONTAS.BTN_ADC_CONTA).click()
-        cy.get(cli_loc.CONTATOS_CONTAS.DESCRICAO).type(cliente.descricao)
+        cy.get(cli_loc.CONTATOS_CONTAS.DESCRICAO).clear().type(cliente.descricao)
         
+        cy.get(cli_loc.CONTATOS_CONTAS.EXCLUIR_BANCO).click()
         cy.get(cli_loc.CONTATOS_CONTAS.SLT_BANCO).click()
         if(cliente.banco == 'Caixa') {
             cy.get(cli_loc.CONTATOS_CONTAS.OPC_SLT_CAIXA).click()
@@ -123,48 +124,42 @@ describe('Deve testar o cadastro de contatos', () => {
             cy.get(cli_loc.CONTATOS_CONTAS.OPC_SLT_SANTANDER).click()
         }
 
-        cy.get(cli_loc.CONTATOS_CONTAS.AGENCIA).type(cliente.agencia)
-        cy.get(cli_loc.CONTATOS_CONTAS.NUMERO_CONTA).type(cliente.numero_conta)
-        cy.get(cli_loc.CONTATOS_CONTAS.DIGITO).type(cliente.digito)
+        cy.get(cli_loc.CONTATOS_CONTAS.AGENCIA).clear().type(cliente.agencia)
+        cy.get(cli_loc.CONTATOS_CONTAS.NUMERO_CONTA).clear().type(cliente.numero_conta)
+        cy.get(cli_loc.CONTATOS_CONTAS.DIGITO).clear().type(cliente.digito)
 
         
-        if(cliente.status == 'inativo') {
-            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE).click()
-        }
+        cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE).then(($switch_button) => {
+
+            if($switch_button.hasClass("ant-switch-checked") && cliente.status == 'inativo') {
+                cy.wrap($switch_button).click()
+                console.log("Clicado pq switch_button.hasClass(ant-switch-checked) && cliente.status == 'inativo'")
+            } else if($switch_button.not(".ant-switch-checked") && cliente.status == 'ativo') {
+                cy.wrap($switch_button).click()
+                console.log("Clicado pq switch_button.not(.ant-switch-checked) && cliente.status == 'ativo'")
+            } else {
+                console.log("Não foi clicado!")
+            }
+        })
 
         // concluir e validar mensagem de sucesso
         cy.get(cli_loc.CLIENTES.BTN_CONCLUIR_CADASTRO).click()
-        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Sócio criado com sucesso!')
+        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Funcionário salvo com sucesso!')
 
     })
 
-    it('Validação do cadastro de sócio', function() {
+    it('Validação da alteração do funcionário', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
-        // busca do sócio para validação
-        let filtro_nome
-        if(cliente.tipo_pessoa == 'fisica') {
-            cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente.nome_pf)
-            filtro_nome = cliente.nome_pf
-        } else {
-            cy.get(cli_loc.CONTATOS_DOC.CNPJ).type(cliente.cnpj)
-            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).type(cliente.razao_social)
-            filtro_nome = cliente.razao_social
-        }
+        // busca do funcionario para validação
+        cy.get(cli_loc.CONTATOS_DOC.CPF).type(cliente.cpf)
+        cy.get(cli_loc.CONTATOS_DOC.NOME_PF).type(cliente.nome_pf)
         cy.get(cli_loc.CLIENTES.BTN_APLICAR_FILTRO).click()
-        cy.get(cli_loc.CLIENTES.BTN_VISUALIZAR_CONTATO(filtro_nome)).click()
+        cy.get(cli_loc.CLIENTES.BTN_VISUALIZAR_CONTATO(cliente.nome_pf)).click()
 
         // validando informações de documentação
-        if(cliente.tipo_pessoa == 'juridica') {
-            cy.get(cli_loc.CONTATOS_DOC.CNPJ).should('have.value', cliente.cnpj)
-            cy.get(cli_loc.CONTATOS_DOC.RAZAO_SOC).should('have.value', cliente.razao_social)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_FANTASIA).should('have.value', cliente.nome_fantasia)
-            cy.get(cli_loc.CONTATOS_DOC.INSC_MUNICIPAL).should('have.value', cliente.inscricao_munic)
-        } else {
-            cy.get(cli_loc.CONTATOS_DOC.CPF).should('have.value', cliente.cpf)
-            cy.get(cli_loc.CONTATOS_DOC.NOME_PF).should('have.value', cliente.nome_pf)  
-        }
+        cy.get(cli_loc.CONTATOS_DOC.CPF).should('have.value', cliente.cpf)
+        cy.get(cli_loc.CONTATOS_DOC.NOME_PF).should('have.value', cliente.nome_pf)
 
         // validando informações de endereço
         cy.get(cli_loc.CONTATOS_ENDERECO.SLT_TIPO_ENDERECO).should('have.text', cliente.tipo_endereco)
