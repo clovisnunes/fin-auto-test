@@ -8,7 +8,6 @@ import env_data from '../support/env_cypress';
 describe('Deve testar a edição de contatos', () => {
 
     // TODO se possivel efetuar login via API
-    // TODO selecionar cliente a ser alterado aleatoriamente por index aleatorio nos items do grid 1 a 20
 
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
@@ -65,7 +64,7 @@ describe('Deve testar a edição de contatos', () => {
     })
 
     it('Alteração de cliente', function() {
-
+        // TODO alterar fluxo de alteração com promisses para mais fluidez na execução do teste
         // selecionando o cliente a ser alterado
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
@@ -150,7 +149,7 @@ describe('Deve testar a edição de contatos', () => {
         cy.get(cli_loc.CONTATOS_CONTAS.DIGITO).clear().type(cliente.digito)
 
         
-        cy.get('nz-form-label:contains("Ativo") ~ nz-switch button').then(($switch_button) => {
+        cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE).then(($switch_button) => {
 
             if($switch_button.hasClass("ant-switch-checked") && cliente.status == 'inativo') {
                 cy.wrap($switch_button).click()
@@ -222,12 +221,14 @@ describe('Deve testar a edição de contatos', () => {
         
         // validando se o cliente esta ativo ou inativo
         if(cliente.status == 'ativo') {
-            cy.get('nz-form-label:contains("Ativo") ~ nz-switch button')
+            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE)
                 .should('have.class', 'ant-switch-checked')
         } else {
-            cy.get('nz-form-label:contains("Ativo") ~ nz-switch button')
+            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE)
                 .should('not.have.class', 'ant-switch-checked')
         }
+
+        // TODO gerar report
 
     })
 

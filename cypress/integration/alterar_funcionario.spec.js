@@ -6,10 +6,6 @@ import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
 import env_data from '../support/env_cypress';
 
 describe('Deve testar a edição de contatos', () => {
-
-    // TODO se possivel efetuar login via API
-    // TODO selecionar cliente a ser alterado aleatoriamente por index aleatorio nos items do grid 1 a 20
-
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
@@ -20,8 +16,6 @@ describe('Deve testar a edição de contatos', () => {
     let cliente = {}
     const random_cep = Math.floor(Math.random() * 10)
     const random_client_index_grid = Math.floor(Math.random() * 10)
-
-    // TODO criar múltiplos registros em seções que permitem: ex: 3 endereços 2 contatos 5 contas bancarias etc
 
     cliente = {
         tipo_pessoa: 'fisica',
@@ -135,7 +129,7 @@ describe('Deve testar a edição de contatos', () => {
         cy.get(cli_loc.CONTATOS_CONTAS.DIGITO).clear().type(cliente.digito)
 
         
-        cy.get('nz-form-label:contains("Ativo") ~ nz-switch button').then(($switch_button) => {
+        cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE).then(($switch_button) => {
 
             if($switch_button.hasClass("ant-switch-checked") && cliente.status == 'inativo') {
                 cy.wrap($switch_button).click()
@@ -180,7 +174,6 @@ describe('Deve testar a edição de contatos', () => {
         // validando informações de contato
         cy.get(cli_loc.CONTATOS_CONTATO.EMAIL).should('have.value', cliente.email)
         cy.get(cli_loc.CONTATOS_CONTATO.TELEFONE).should('have.value', cliente.numero_telefone)
-        // TODO report bug observacoes de contato não estao sendo salvas
         // cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).should('have.value', cliente.observacoes)
 
         // validando informações de conta bancária
@@ -192,10 +185,10 @@ describe('Deve testar a edição de contatos', () => {
         
         // validando se o cliente esta ativo ou inativo
         if(cliente.status == 'ativo') {
-            cy.get('nz-form-label:contains("Ativo") ~ nz-switch button')
+            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE)
                 .should('have.class', 'ant-switch-checked')
         } else {
-            cy.get('nz-form-label:contains("Ativo") ~ nz-switch button')
+            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE)
                 .should('not.have.class', 'ant-switch-checked')
         }
 

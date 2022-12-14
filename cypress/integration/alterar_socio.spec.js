@@ -6,7 +6,6 @@ import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
 import env_data from '../support/env_cypress';
 
 describe('Deve testar a edição de contatos', () => {
-    
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
@@ -56,12 +55,11 @@ describe('Deve testar a edição de contatos', () => {
         cy.visit(env_data.url)
         cy.get(cli_loc.MINHAS_EMPRESAS.EMPRESA('Kilback, Lebsack and Spinka')).click() // seleciona empresa dinamicamente pelo nome
         cy.xpath(cli_loc.MENU_LATERAL.CONTATOS).click()
-        cy.xpath(cli_loc.MENU_LATERAL.FORNECEDORES).click()
+        cy.xpath(cli_loc.MENU_LATERAL.SOCIOS).click()
     })
 
-    it('Alteração de fornecedor', function() {
-
-        // selecionando o fornecedor a ser alterado
+    it('Alteração de sócio', function() {
+        // selecionando o sócio a ser alterado
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
         cy.get('table tbody tr:eq(' + random_client_index_grid +')').then(($tr_cliente) => {
@@ -160,11 +158,11 @@ describe('Deve testar a edição de contatos', () => {
 
         // concluir e validar mensagem de sucesso
         cy.get(cli_loc.CLIENTES.BTN_CONCLUIR_CADASTRO).click()
-        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Fornecedor salvo com sucesso!')
+        cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('have.text', 'Sócio salvo com sucesso!')
 
     })
 
-    it('Validação da alteração do fornecedor', function() {
+    it('Validação da alteração do sócio', function() {
         cy.get(cli_loc.CLIENTES.MSG_CLIENTE_CRIADO).should('not.be.visible')
 
         // busca do fornecedor para validação

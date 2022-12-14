@@ -6,9 +6,6 @@ import {cpf, cnpj} from '../support/gerador_CPF_CNPJ'
 import env_data from '../support/env_cypress';
 
 describe('Deve testar o cadastro de contatos', () => {
-
-    // TODO se possivel efetuar login via API
-
     // dados aleatórios
     const tipos_endereco = ['Residencial', 'Comercial']
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
@@ -18,10 +15,6 @@ describe('Deve testar o cadastro de contatos', () => {
     const random_status = Math.floor(Math.random() * statuses.length)
     let cliente = {}
     const random_cep = Math.floor(Math.random() * 10)
-
-    // TODO criar múltiplos registros em seções que permitem: ex: 3 endereços 2 contatos 5 contas bancarias etc
-    // ideia: numero aleatorio de 1 a 5 irá gerar a quantidade de registros que serão adicionados
-    // numero aleatorio de 0 até o máximo da quantidade de registros gerados será removido
 
     cliente = {
         tipo_pessoa: 'fisica',
@@ -159,7 +152,6 @@ describe('Deve testar o cadastro de contatos', () => {
         // validando informações de contato
         cy.get(cli_loc.CONTATOS_CONTATO.EMAIL).should('have.value', cliente.email)
         cy.get(cli_loc.CONTATOS_CONTATO.TELEFONE).should('have.value', cliente.numero_telefone)
-        // TODO report bug observacoes de contato não estao sendo salvas
         // cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).should('have.value', cliente.observacoes)
 
         // validando informações de conta bancária
@@ -171,10 +163,10 @@ describe('Deve testar o cadastro de contatos', () => {
         
         // validando se o cliente esta ativo ou inativo
         if(cliente.status == 'ativo') {
-            cy.get('nz-form-label:contains("Ativo") ~ nz-switch button')
+            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE)
                 .should('have.class', 'ant-switch-checked')
         } else {
-            cy.get('nz-form-label:contains("Ativo") ~ nz-switch button')
+            cy.get(cli_loc.CLIENTES.BTN_INATIVAR_CLIENTE)
                 .should('not.have.class', 'ant-switch-checked')
         }
 
