@@ -20,7 +20,7 @@ const contatos_locators = {
         PLANOS_CONTA: '',
         CONTAS_PAGAR: '',
         CONTAS_RECEBER: '',
-        CONTAS: '',
+        CONTAS: '//ul/li/a/span[text()="Contas"]/..',
         RELATORIO: '',
     },
 

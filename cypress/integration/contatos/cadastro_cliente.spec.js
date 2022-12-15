@@ -179,7 +179,7 @@ describe('Deve testar o cadastro de contatos', () => {
         // validando informações de contato
         cy.get(cli_loc.CONTATOS_CONTATO.EMAIL).should('have.value', cliente.email)
         cy.get(cli_loc.CONTATOS_CONTATO.TELEFONE).should('have.value', cliente.numero_telefone)
-        // cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).should('have.value', cliente.observacoes)
+        cy.get(cli_loc.CONTATOS_CONTATO.OBSERVACOES).should('have.value', cliente.observacoes)
 
         // validando informações de conta bancária
         cy.get(cli_loc.CONTATOS_CONTAS.DESCRICAO).should('have.value', cliente.descricao)
