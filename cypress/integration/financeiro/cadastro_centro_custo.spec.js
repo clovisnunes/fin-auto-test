@@ -4,6 +4,8 @@ import env_data from '../../support/env_cypress';
 import cli_loc from '../../support/cliente-locators';
 import { faker } from '@faker-js/faker/locale/pt_BR';
 
+// TODO organizar locator no arquivo support/financeiro-locators
+
 describe('Deve testar e validar o cadastro de centro de custos', () => {
 
     const MAXIMO_SUBSETORES = 5

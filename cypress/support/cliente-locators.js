@@ -18,8 +18,8 @@ const contatos_locators = {
 
         CENTROS_CUSTO: '//ul/li/a/span[text()="Centros de Custo"]/..',
         PLANOS_CONTA: '',
-        CONTAS_PAGAR: '',
-        CONTAS_RECEBER: '',
+        CONTAS_PAGAR: '//ul/li/a/span[text()="Contas a pagar"]/..',
+        CONTAS_RECEBER: '//ul/li/a/span[text()="Contas a receber"]/..',
         CONTAS: '//ul/li/a/span[text()="Contas"]/..',
         RELATORIO: '',
     },
@@ -47,8 +47,8 @@ const contatos_locators = {
     FINANCEIRO: {
         BTN_CADASTRAR_CCUSTO: 'h2:contains("Centros de Custos") a',
         BTN_CADASTRAR_P_CONTA: 'h2:contains("Planos de Conta") a',
-        BTN_CADASTRAR_C_PAGAR: 'h2:contains("Contas a pagar") a',
-        BTN_CADASTRAR_C_RECEBER: 'h2:contains("Contas a receber") a',
+        BTN_CADASTRAR_C_PAGAR: 'h2:contains("Contas a Pagar") ~ button:contains("Criar Agendamento")',
+        BTN_CADASTRAR_C_RECEBER: 'h2:contains("Contas a Receber") ~ button:contains("Criar Agendamento")',
         BTN_CADASTRAR_CONTAS: 'h2:contains("Contas") a',
 
     },

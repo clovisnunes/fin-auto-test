@@ -7,6 +7,7 @@ import env_data from '../../support/env_cypress';
 
 describe('Deve testar o cadastro de contatos', () => {
     // dados aleatórios
+    // TODO usar commands para preencher dados de documentação (fisica e juridica), endereços, contatos e contas bancárias
     const tipos_endereco = ['Residencial', 'Comercial']
     const random_t_endereco = Math.floor(Math.random() * tipos_endereco.length)
     const bancos = ['Caixa', 'Santander']
